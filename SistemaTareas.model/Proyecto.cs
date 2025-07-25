@@ -16,7 +16,7 @@ namespace SistemaTareas.model
         [StringLength(1000)]
         public string Descripcion { get; set; }
 
-        public DateTime FechaInicio { get; set; } = DateTime.UtcNow;
+        public DateTime FechaInicio { get; set; }
 
         public DateTime? FechaFin { get; set; }
 

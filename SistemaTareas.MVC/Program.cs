@@ -1,36 +1,33 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using SistemaTareas.MVC.Data;
 
+using SistemaTareas.ApiConsumer;
+using SistemaTareas.model;
+using System.Text;
 namespace SistemaTareas.MVC
 {
     public class Program
     {
         public static void Main(string[] args)
         {
+            Crud<AsignacionProyecto>.EndPoint = "https://localhost:7047/api/AsignacionesProyectos";
+            Crud<ComentarioTarea>.EndPoint = "https://localhost:7047/api/ComentariosTareas";
+            Crud<HistorialTarea>.EndPoint = "https://localhost:7047/api/HistorialTareas";
+            Crud<Proyecto>.EndPoint = "https://localhost:7047/api/Proyectos";
+            Crud<Tarea>.EndPoint = "https://localhost:7047/api/Tareas";
+            Crud<Usuario>.EndPoint = "https://localhost:7047/api/Usuarios";
+
+
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionString));
-            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+          
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseMigrationsEndPoint();
-            }
-            else
+            
+            if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                
                 app.UseHsts();
             }
 
@@ -44,7 +41,6 @@ namespace SistemaTareas.MVC
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
-            app.MapRazorPages();
 
             app.Run();
         }

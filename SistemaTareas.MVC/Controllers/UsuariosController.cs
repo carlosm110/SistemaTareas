@@ -1,157 +1,93 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using SistemaTareas.MVC.Data;
+﻿using Microsoft.AspNetCore.Mvc;
+using SistemaTareas.ApiConsumer;
 using SistemaTareas.model;
 
 namespace SistemaTareas.MVC.Controllers
 {
     public class UsuariosController : Controller
     {
-        private readonly ApplicationDbContext _context;
-
-        public UsuariosController(ApplicationDbContext context)
+        public ActionResult Index()
         {
-            _context = context;
-        }
 
-        // GET: Usuarios
-        public async Task<IActionResult> Index()
+            var originalEndpoint = Crud<Usuario>.GetAll();
+            return View(originalEndpoint);
+
+        }
+        public ActionResult Details(int id)
         {
-            return View(await _context.Usuario.ToListAsync());
+
+            var Tarea = Crud<Usuario>.GetById(id);
+            return View(Tarea);
+
         }
-
-        // GET: Usuarios/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var usuario = await _context.Usuario
-                .FirstOrDefaultAsync(m => m.UsuarioId == id);
-            if (usuario == null)
-            {
-                return NotFound();
-            }
-
-            return View(usuario);
-        }
-
-        // GET: Usuarios/Create
-        public IActionResult Create()
+        public ActionResult Create()
         {
             return View();
         }
 
-        // POST: Usuarios/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("UsuarioId,Nombre,Email,ContrasenaHash,Rol,FechaCreacion")] Usuario usuario)
+        public ActionResult Create(Usuario data)
         {
-            if (ModelState.IsValid)
+            try
             {
-                _context.Add(usuario);
-                await _context.SaveChangesAsync();
+                Crud<Usuario>.Create(data);
                 return RedirectToAction(nameof(Index));
             }
-            return View(usuario);
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View(data);
+            }
         }
 
-        // GET: Usuarios/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        // GET: Songs/Edit/5
+        public ActionResult Edit(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
-            var usuario = await _context.Usuario.FindAsync(id);
-            if (usuario == null)
-            {
-                return NotFound();
-            }
-            return View(usuario);
+
+            var data = Crud<Usuario>.GetById(id);
+            return View(data);
+
+
         }
-
-        // POST: Usuarios/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Songs/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("UsuarioId,Nombre,Email,ContrasenaHash,Rol,FechaCreacion")] Usuario usuario)
+        public ActionResult Edit(int id, Usuario data)
         {
-            if (id != usuario.UsuarioId)
-            {
-                return NotFound();
-            }
 
-            if (ModelState.IsValid)
+            try
             {
-                try
-                {
-                    _context.Update(usuario);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!UsuarioExists(usuario.UsuarioId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                Crud<Usuario>.Update(id, data);
                 return RedirectToAction(nameof(Index));
             }
-            return View(usuario);
-        }
-
-        // GET: Usuarios/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
+            catch (Exception ex)
             {
-                return NotFound();
+                ModelState.AddModelError("", ex.Message);
+                return View(data);
             }
 
-            var usuario = await _context.Usuario
-                .FirstOrDefaultAsync(m => m.UsuarioId == id);
-            if (usuario == null)
-            {
-                return NotFound();
-            }
-
-            return View(usuario);
         }
-
-        // POST: Usuarios/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public ActionResult Delete(int id)
         {
-            var usuario = await _context.Usuario.FindAsync(id);
-            if (usuario != null)
-            {
-                _context.Usuario.Remove(usuario);
-            }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            var data = Crud<Usuario>.GetById(id);
+            return View(data);
         }
-
-        private bool UsuarioExists(int id)
+        public ActionResult Delete(int id, Usuario data)
         {
-            return _context.Usuario.Any(e => e.UsuarioId == id);
+            try
+            {
+                Crud<Usuario>.Delete(id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View(data);
+            }
         }
     }
+
 }

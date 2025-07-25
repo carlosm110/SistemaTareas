@@ -29,7 +29,7 @@ namespace SistemaTareas.model
         [InverseProperty("TareasAsignadas")]
         public virtual Usuario? AsignadoA { get; set; }
 
-        public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
+        public DateTime FechaCreacion { get; set; } 
 
         public DateTime? FechaVencimiento { get; set; }
 

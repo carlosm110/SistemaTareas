@@ -8,15 +8,13 @@ namespace SistemaTareas.model
     {
         [Key]
         public int ComentarioId { get; set; }
-
-
         [Required]
         public string Contenido { get; set; }
 
-        public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
+        public DateTime FechaCreacion { get; set; } 
 
-        public virtual Tarea Tarea { get; set; }
-        public virtual Usuario Usuario { get; set; }
+        public virtual Tarea? Tarea { get; set; }
+        public virtual Usuario? Usuario { get; set; }
         [Required]
         [ForeignKey("Tarea")]
         public int TareaId { get; set; }

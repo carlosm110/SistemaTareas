@@ -20,7 +20,7 @@ namespace SistemaTareas.model
         [StringLength(50)]
         public string Rol { get; set; }
 
-        public DateTime FechaAsignacion { get; set; } = DateTime.UtcNow;
+        public DateTime FechaAsignacion { get; set; }
 
         public Usuario? Usuario { get; set; }
         public Proyecto? Proyecto { get; set; }

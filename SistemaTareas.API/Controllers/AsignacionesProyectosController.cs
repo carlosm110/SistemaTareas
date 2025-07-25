@@ -24,14 +24,14 @@ namespace SistemaTareas.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AsignacionProyecto>>> GetAsignacionProyecto()
         {
-            return await _context.AsignacionProyecto.ToListAsync();
+            return await _context.AsignacionesProyectos.ToListAsync();
         }
 
         // GET: api/AsignacionesProyectos/5
         [HttpGet("{id}")]
         public async Task<ActionResult<AsignacionProyecto>> GetAsignacionProyecto(int id)
         {
-            var asignacionProyecto = await _context.AsignacionProyecto.FindAsync(id);
+            var asignacionProyecto = await _context.AsignacionesProyectos.FindAsync(id);
 
             if (asignacionProyecto == null)
             {
@@ -77,7 +77,7 @@ namespace SistemaTareas.API.Controllers
         [HttpPost]
         public async Task<ActionResult<AsignacionProyecto>> PostAsignacionProyecto(AsignacionProyecto asignacionProyecto)
         {
-            _context.AsignacionProyecto.Add(asignacionProyecto);
+            _context.AsignacionesProyectos.Add(asignacionProyecto);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetAsignacionProyecto", new { id = asignacionProyecto.AsignacionId }, asignacionProyecto);
@@ -87,13 +87,13 @@ namespace SistemaTareas.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsignacionProyecto(int id)
         {
-            var asignacionProyecto = await _context.AsignacionProyecto.FindAsync(id);
+            var asignacionProyecto = await _context.AsignacionesProyectos.FindAsync(id);
             if (asignacionProyecto == null)
             {
                 return NotFound();
             }
 
-            _context.AsignacionProyecto.Remove(asignacionProyecto);
+            _context.AsignacionesProyectos.Remove(asignacionProyecto);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -101,7 +101,7 @@ namespace SistemaTareas.API.Controllers
 
         private bool AsignacionProyectoExists(int id)
         {
-            return _context.AsignacionProyecto.Any(e => e.AsignacionId == id);
+            return _context.AsignacionesProyectos.Any(e => e.AsignacionId == id);
         }
     }
 }

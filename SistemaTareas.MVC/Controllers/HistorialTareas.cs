@@ -4,20 +4,19 @@ using SistemaTareas.model;
 
 namespace SistemaTareas.MVC.Controllers
 {
-    public class TareasController : Controller
+    public class HistorialTareas : Controller
     {
-       
         public ActionResult Index()
         {
-          
-            var originalEndpoint = Crud<Tarea>.GetAll();
+
+            var originalEndpoint = Crud<HistorialTarea>.GetAll();
             return View(originalEndpoint);
 
         }
         public ActionResult Details(int id)
         {
-    
-            var Tarea = Crud<Tarea>.GetById(id);
+
+            var Tarea = Crud<HistorialTarea>.GetById(id);
             return View(Tarea);
 
         }
@@ -28,11 +27,11 @@ namespace SistemaTareas.MVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Tarea data)
+        public ActionResult Create(HistorialTarea data)
         {
             try
             {
-                Crud<Tarea>.Create(data);
+                Crud<HistorialTarea>.Create(data);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -47,7 +46,7 @@ namespace SistemaTareas.MVC.Controllers
         {
 
 
-            var data = Crud<Tarea>.GetById(id);
+            var data = Crud<HistorialTarea>.GetById(id);
             return View(data);
 
 
@@ -55,12 +54,12 @@ namespace SistemaTareas.MVC.Controllers
         // POST: Songs/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, Tarea data)
+        public ActionResult Edit(int id, HistorialTarea data)
         {
 
             try
             {
-                Crud<Tarea>.Update(id, data);
+                Crud<HistorialTarea>.Update(id, data);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -72,15 +71,15 @@ namespace SistemaTareas.MVC.Controllers
         }
         public ActionResult Delete(int id)
         {
-        
-            var data = Crud<Tarea>.GetById(id);
+
+            var data = Crud<HistorialTarea>.GetById(id);
             return View(data);
         }
-        public ActionResult Delete(int id, Tarea data)
+        public ActionResult Delete(int id, HistorialTarea data)
         {
             try
             {
-                Crud<Tarea>.Delete(id);
+                Crud<HistorialTarea>.Delete(id);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)

@@ -4,167 +4,103 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using SistemaTareas.MVC.Data;
 using SistemaTareas.model;
+using SistemaTareas.ApiConsumer;
+using Newtonsoft.Json;
+using System.Net.Http.Headers;
+using System.Net.Http;
+using System.Text;
 
 namespace SistemaTareas.MVC.Controllers
 {
     public class ComentariosTareasController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        
 
-        public ComentariosTareasController(ApplicationDbContext context)
+        
+        public ActionResult Index()
         {
-            _context = context;
+            
+            var originalEndpoint = Crud<Tarea>.GetAll();
+            return View(originalEndpoint);
+
         }
-
-        // GET: ComentariosTareas
-        public async Task<IActionResult> Index()
+       
+        public ActionResult Details(int id)
         {
-            var applicationDbContext = _context.ComentarioTarea.Include(c => c.Tarea).Include(c => c.Usuario);
-            return View(await applicationDbContext.ToListAsync());
-        }
-
-        // GET: ComentariosTareas/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var comentarioTarea = await _context.ComentarioTarea
-                .Include(c => c.Tarea)
-                .Include(c => c.Usuario)
-                .FirstOrDefaultAsync(m => m.ComentarioId == id);
-            if (comentarioTarea == null)
-            {
-                return NotFound();
-            }
-
+            
+            
+            var comentarioTarea = Crud<Tarea>.GetById(id);
             return View(comentarioTarea);
-        }
 
-        // GET: ComentariosTareas/Create
-        public IActionResult Create()
+        }
+        public ActionResult Create()
         {
-            ViewData["TareaId"] = new SelectList(_context.Set<Tarea>(), "TareaId", "Descripcion");
-            ViewData["UsuarioId"] = new SelectList(_context.Set<Usuario>(), "UsuarioId", "ContrasenaHash");
             return View();
         }
 
-        // POST: ComentariosTareas/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ComentarioId,Contenido,FechaCreacion,TareaId,UsuarioId")] ComentarioTarea comentarioTarea)
+        public async Task<IActionResult> Create(Tarea data)
         {
-            if (ModelState.IsValid)
+            try
             {
-                _context.Add(comentarioTarea);
-                await _context.SaveChangesAsync();
+                Crud<Tarea>.Create(data);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["TareaId"] = new SelectList(_context.Set<Tarea>(), "TareaId", "Descripcion", comentarioTarea.TareaId);
-            ViewData["UsuarioId"] = new SelectList(_context.Set<Usuario>(), "UsuarioId", "ContrasenaHash", comentarioTarea.UsuarioId);
-            return View(comentarioTarea);
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View(data);
+            }
         }
 
-        // GET: ComentariosTareas/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        // GET: Songs/Edit/5
+        public ActionResult  Edit(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
-            var comentarioTarea = await _context.ComentarioTarea.FindAsync(id);
-            if (comentarioTarea == null)
-            {
-                return NotFound();
-            }
-            ViewData["TareaId"] = new SelectList(_context.Set<Tarea>(), "TareaId", "Descripcion", comentarioTarea.TareaId);
-            ViewData["UsuarioId"] = new SelectList(_context.Set<Usuario>(), "UsuarioId", "ContrasenaHash", comentarioTarea.UsuarioId);
-            return View(comentarioTarea);
+
+            var data = Crud<Tarea>.GetById(id);
+            return View(data);
+
+
         }
-
-        // POST: ComentariosTareas/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Songs/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ComentarioId,Contenido,FechaCreacion,TareaId,UsuarioId")] ComentarioTarea comentarioTarea)
+        public ActionResult Edit(int id, Tarea data)
         {
-            if (id != comentarioTarea.ComentarioId)
-            {
-                return NotFound();
-            }
 
-            if (ModelState.IsValid)
+            try
             {
-                try
-                {
-                    _context.Update(comentarioTarea);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ComentarioTareaExists(comentarioTarea.ComentarioId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                Crud<Tarea>.Update(id, data);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["TareaId"] = new SelectList(_context.Set<Tarea>(), "TareaId", "Descripcion", comentarioTarea.TareaId);
-            ViewData["UsuarioId"] = new SelectList(_context.Set<Usuario>(), "UsuarioId", "ContrasenaHash", comentarioTarea.UsuarioId);
-            return View(comentarioTarea);
-        }
-
-        // GET: ComentariosTareas/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
+            catch (Exception ex)
             {
-                return NotFound();
+                ModelState.AddModelError("", ex.Message);
+                return View(data);
             }
 
-            var comentarioTarea = await _context.ComentarioTarea
-                .Include(c => c.Tarea)
-                .Include(c => c.Usuario)
-                .FirstOrDefaultAsync(m => m.ComentarioId == id);
-            if (comentarioTarea == null)
-            {
-                return NotFound();
-            }
-
-            return View(comentarioTarea);
         }
-
-        // POST: ComentariosTareas/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public ActionResult Delete(int id)
         {
-            var comentarioTarea = await _context.ComentarioTarea.FindAsync(id);
-            if (comentarioTarea != null)
-            {
-                _context.ComentarioTarea.Remove(comentarioTarea);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+           
+            var data = Crud<Tarea>.GetById(id);
+            return View(data);
         }
-
-        private bool ComentarioTareaExists(int id)
+        public ActionResult Delete(int id, Tarea data)
         {
-            return _context.ComentarioTarea.Any(e => e.ComentarioId == id);
+            try
+            {
+                Crud<Tarea>.Delete(id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View(data);
+            }
         }
     }
 }

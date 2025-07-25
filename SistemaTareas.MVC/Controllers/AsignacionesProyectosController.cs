@@ -1,170 +1,92 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using SistemaTareas.MVC.Data;
+﻿using Microsoft.AspNetCore.Mvc;
+using SistemaTareas.ApiConsumer;
 using SistemaTareas.model;
 
 namespace SistemaTareas.MVC.Controllers
 {
     public class AsignacionesProyectosController : Controller
     {
-        private readonly ApplicationDbContext _context;
-
-        public AsignacionesProyectosController(ApplicationDbContext context)
+        public ActionResult Index()
         {
-            _context = context;
+
+            var originalEndpoint = Crud<AsignacionProyecto>.GetAll();
+            return View(originalEndpoint);
+
         }
-
-        // GET: AsignacionesProyectos
-        public async Task<IActionResult> Index()
+        public ActionResult Details(int id)
         {
-            var applicationDbContext = _context.AsignacionProyecto.Include(a => a.Proyecto).Include(a => a.Usuario);
-            return View(await applicationDbContext.ToListAsync());
+
+            var Tarea = Crud<AsignacionProyecto>.GetById(id);
+            return View(Tarea);
+
         }
-
-        // GET: AsignacionesProyectos/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public ActionResult Create()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var asignacionProyecto = await _context.AsignacionProyecto
-                .Include(a => a.Proyecto)
-                .Include(a => a.Usuario)
-                .FirstOrDefaultAsync(m => m.AsignacionId == id);
-            if (asignacionProyecto == null)
-            {
-                return NotFound();
-            }
-
-            return View(asignacionProyecto);
-        }
-
-        // GET: AsignacionesProyectos/Create
-        public IActionResult Create()
-        {
-            ViewData["ProyectoId"] = new SelectList(_context.Set<Proyecto>(), "ProyectoId", "Descripcion");
-            ViewData["UsuarioId"] = new SelectList(_context.Set<Usuario>(), "UsuarioId", "ContrasenaHash");
             return View();
         }
 
-        // POST: AsignacionesProyectos/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("AsignacionId,UsuarioId,ProyectoId,Rol,FechaAsignacion")] AsignacionProyecto asignacionProyecto)
+        public ActionResult Create(AsignacionProyecto data)
         {
-            if (ModelState.IsValid)
+            try
             {
-                _context.Add(asignacionProyecto);
-                await _context.SaveChangesAsync();
+                Crud<AsignacionProyecto>.Create(data);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ProyectoId"] = new SelectList(_context.Set<Proyecto>(), "ProyectoId", "Descripcion", asignacionProyecto.ProyectoId);
-            ViewData["UsuarioId"] = new SelectList(_context.Set<Usuario>(), "UsuarioId", "ContrasenaHash", asignacionProyecto.UsuarioId);
-            return View(asignacionProyecto);
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View(data);
+            }
         }
 
-        // GET: AsignacionesProyectos/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        // GET: Songs/Edit/5
+        public ActionResult Edit(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
-            var asignacionProyecto = await _context.AsignacionProyecto.FindAsync(id);
-            if (asignacionProyecto == null)
-            {
-                return NotFound();
-            }
-            ViewData["ProyectoId"] = new SelectList(_context.Set<Proyecto>(), "ProyectoId", "Descripcion", asignacionProyecto.ProyectoId);
-            ViewData["UsuarioId"] = new SelectList(_context.Set<Usuario>(), "UsuarioId", "ContrasenaHash", asignacionProyecto.UsuarioId);
-            return View(asignacionProyecto);
+
+            var data = Crud<AsignacionProyecto>.GetById(id);
+            return View(data);
+
+
         }
-
-        // POST: AsignacionesProyectos/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Songs/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("AsignacionId,UsuarioId,ProyectoId,Rol,FechaAsignacion")] AsignacionProyecto asignacionProyecto)
+        public ActionResult Edit(int id, AsignacionProyecto data)
         {
-            if (id != asignacionProyecto.AsignacionId)
-            {
-                return NotFound();
-            }
 
-            if (ModelState.IsValid)
+            try
             {
-                try
-                {
-                    _context.Update(asignacionProyecto);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!AsignacionProyectoExists(asignacionProyecto.AsignacionId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                Crud<AsignacionProyecto>.Update(id, data);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ProyectoId"] = new SelectList(_context.Set<Proyecto>(), "ProyectoId", "Descripcion", asignacionProyecto.ProyectoId);
-            ViewData["UsuarioId"] = new SelectList(_context.Set<Usuario>(), "UsuarioId", "ContrasenaHash", asignacionProyecto.UsuarioId);
-            return View(asignacionProyecto);
-        }
-
-        // GET: AsignacionesProyectos/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
+            catch (Exception ex)
             {
-                return NotFound();
+                ModelState.AddModelError("", ex.Message);
+                return View(data);
             }
 
-            var asignacionProyecto = await _context.AsignacionProyecto
-                .Include(a => a.Proyecto)
-                .Include(a => a.Usuario)
-                .FirstOrDefaultAsync(m => m.AsignacionId == id);
-            if (asignacionProyecto == null)
-            {
-                return NotFound();
-            }
-
-            return View(asignacionProyecto);
         }
-
-        // POST: AsignacionesProyectos/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public ActionResult Delete(int id)
         {
-            var asignacionProyecto = await _context.AsignacionProyecto.FindAsync(id);
-            if (asignacionProyecto != null)
-            {
-                _context.AsignacionProyecto.Remove(asignacionProyecto);
-            }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            var data = Crud<AsignacionProyecto>.GetById(id);
+            return View(data);
         }
-
-        private bool AsignacionProyectoExists(int id)
+        public ActionResult Delete(int id, AsignacionProyecto data)
         {
-            return _context.AsignacionProyecto.Any(e => e.AsignacionId == id);
+            try
+            {
+                Crud<AsignacionProyecto>.Delete(id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View(data);
+            }
         }
     }
 }

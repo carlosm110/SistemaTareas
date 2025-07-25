@@ -17,7 +17,7 @@ namespace SistemaTareas.model
 
         public string ValorNuevo { get; set; }
 
-        public DateTime FechaCambio { get; set; } = DateTime.UtcNow;
+        public DateTime FechaCambio { get; set; }
 
         public virtual Tarea Tarea { get; set; }
         public virtual Usuario CambiadoPor { get; set; }
